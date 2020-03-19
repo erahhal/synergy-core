@@ -1,11 +1,11 @@
 # synergy -- mouse and keyboard sharing utility
 # Copyright (C) 2012-2016 Symless Ltd.
 # Copyright (C) 2011 Nick Bolton
-# 
+#
 # This package is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
 # found in the file LICENSE that should have accompanied this file.
-# 
+#
 # This package is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -23,11 +23,6 @@ if (WIN32)
 	set(OPENSSL_INCLUDE ${CMAKE_SOURCE_DIR}/ext/${OPENSSL_PLAT_DIR}/inc32)
 endif()
 
-if (APPLE)
-	set(OPENSSL_PLAT_DIR openssl-osx)
-	set(OPENSSL_INCLUDE ${CMAKE_SOURCE_DIR}/ext/${OPENSSL_PLAT_DIR}/include)
-endif()
-
 if (WIN32)
 	set(OPENSSL_LIBS
 		${CMAKE_SOURCE_DIR}/ext/${OPENSSL_PLAT_DIR}/out32dll/libeay32.lib
@@ -36,12 +31,7 @@ if (WIN32)
 endif()
 
 if (UNIX)
-	if (APPLE)
-		set(OPENSSL_LIBS
-		${CMAKE_SOURCE_DIR}/ext/${OPENSSL_PLAT_DIR}/libssl.a
-		${CMAKE_SOURCE_DIR}/ext/${OPENSSL_PLAT_DIR}/libcrypto.a
-		)
-	else()
+	if (NOT APPLE)
 		set(OPENSSL_LIBS ssl crypto)
 	endif()
 endif()

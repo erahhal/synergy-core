@@ -1,11 +1,11 @@
 # synergy -- mouse and keyboard sharing utility
 # Copyright (C) 2012-2016 Symless Ltd.
 # Copyright (C) 2009 Nick Bolton
-# 
+#
 # This package is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
 # found in the file LICENSE that should have accompanied this file.
-# 
+#
 # This package is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -59,7 +59,7 @@ set(bin_dir ${root_dir}/bin)
 set(doc_dir ${root_dir}/doc)
 set(doc_dir ${root_dir}/doc)
 
-# Declare libs, so we can use list in linker later. There's probably 
+# Declare libs, so we can use list in linker later. There's probably
 # a more elegant way of doing this; with SCons, when you check for the
 # lib, it is automatically passed to the linker.
 set(libs)
@@ -113,7 +113,7 @@ if (UNIX)
 	check_function_exists(strftime HAVE_STRFTIME)
 	check_function_exists(vsnprintf HAVE_VSNPRINTF)
 	check_function_exists(inet_aton HAVE_INET_ATON)
-	
+
 	# For some reason, the check_function_exists macro doesn't detect
 	# the inet_aton on some pure Unix platforms (e.g. sunos5). So we
 	# need to do a more detailed check and also include some extra libs.
@@ -121,12 +121,12 @@ if (UNIX)
 
 		set(CMAKE_REQUIRED_LIBRARIES nsl)
 		check_c_source_compiles(
-			"#include <arpa/inet.h>\n int main() { inet_aton(0, 0); }" 
+			"#include <arpa/inet.h>\n int main() { inet_aton(0, 0); }"
 			HAVE_INET_ATON_ADV)
 		set(CMAKE_REQUIRED_LIBRARIES)
 
 		if (HAVE_INET_ATON_ADV)
-			
+
 			# Override the previous fail.
 			set(HAVE_INET_ATON 1)
 
@@ -159,25 +159,8 @@ if (UNIX)
 	else()
 		message(FATAL_ERROR "Missing library: curl")
 	endif()
-	
+
 	if (APPLE)
-		message(STATUS "OSX_TARGET_MAJOR=${OSX_TARGET_MAJOR}")
-		message(STATUS "OSX_TARGET_MINOR=${OSX_TARGET_MINOR}")
-
-		if (NOT (OSX_TARGET_MAJOR EQUAL 10))
-			message(FATAL_ERROR "Mac OS X target must be 10.x")
-		endif ()
-
-		if (OSX_TARGET_MINOR LESS 6)
-			# <= 10.5: 32-bit Intel and PowerPC
-			set(CMAKE_OSX_ARCHITECTURES "ppc;i386"
-				CACHE STRING "" FORCE)
-		else()
-			# >= 10.6: Intel only
-			set(CMAKE_OSX_ARCHITECTURES "i386"
-				CACHE STRING "" FORCE)
-		endif()
-		
 		set(CMAKE_CXX_FLAGS "--sysroot ${CMAKE_OSX_SYSROOT} ${CMAKE_CXX_FLAGS} -DGTEST_USE_OWN_TR1_TUPLE=1")
 
 		find_library(lib_ScreenSaver ScreenSaver)
@@ -265,7 +248,7 @@ if (UNIX)
 		if (HAVE_Xrandr)
 			list(APPEND libs Xrandr)
 		endif()
-		
+
 		# this was outside of the linux scope,
 		# not sure why, moving it back inside.
 		if(HAVE_Xi)
@@ -311,7 +294,7 @@ else() # not-unix
 		/D_CRT_SECURE_NO_WARNINGS
 		/DVERSION=\"${VERSION}\"
 	)
-	
+
 	if (MSVC_VERSION EQUAL 1600)
 		set(SLN_FILENAME "${CMAKE_CURRENT_BINARY_DIR}/synergy.sln")
 		if (EXISTS "${SLN_FILENAME}" )
@@ -320,6 +303,16 @@ else() # not-unix
 	endif()
 
 endif()
+
+if (APPLE)
+    set (OPENSSL_ROOT /usr/local/opt/openssl)
+    include_directories (BEFORE SYSTEM ${OPENSSL_ROOT}/include)
+    set (OPENSSL_LIBS
+        ${OPENSSL_ROOT}/lib/libssl.a
+        ${OPENSSL_ROOT}/lib/libcrypto.a
+    )
+endif()
+
 
 add_subdirectory(src)
 
@@ -332,7 +325,7 @@ if (WIN32)
 	# /D _BIND_TO_CURRENT_VCLIBS_VERSION - TODO: explain why.
 	# /D _SECURE_SCL=1 - find bugs with iterators.
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX /FR /MP /D _BIND_TO_CURRENT_VCLIBS_VERSION=1 /D _SECURE_SCL=1")
-	
+
 	# /MD - use multi-core libraries.
 	# /O2 - get the fastest code.
 	# /Ob2 - expand inline functions (auto-inlining).
